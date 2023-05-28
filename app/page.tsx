@@ -1,4 +1,3 @@
-import { use } from "react";
 import { Map } from "./components/Map";
 import { FlightSearch } from "./components/FlightSearch";
 
