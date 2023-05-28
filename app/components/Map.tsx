@@ -95,7 +95,8 @@ function usePeriodicallyFetchData(flightId?: string) {
         setToRefetch(false);
       } catch (error: any) {
         if (!data) setError(error);
-        console.error(error);
+
+        alert(error);
       }
 
       setRefetchTimeout(
