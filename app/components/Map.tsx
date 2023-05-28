@@ -7,6 +7,8 @@ import {
   Polyline,
 } from "@react-google-maps/api";
 
+import getURL from "../utils/getURL";
+
 const containerStyle = {
   width: "100%",
   height: "600px",
@@ -79,7 +81,7 @@ function usePeriodicallyFetchData(flightId?: string) {
 
     (async () => {
       try {
-        const res = await fetch(`/api/flight-position?id=${flightId}`);
+        const res = await fetch(getURL(`/api/flight-position?id=${flightId}`));
 
         const data = await res.json();
 

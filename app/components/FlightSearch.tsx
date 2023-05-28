@@ -1,8 +1,10 @@
 import { use } from "react";
 import Link from "next/link";
 
+import getURL from "../utils/getURL";
+
 async function getData() {
-  const res = await fetch("/api/flight-search");
+  const res = await fetch(getURL("/api/flight-search"));
   const data = await res.json();
 
   return data;
