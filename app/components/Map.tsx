@@ -102,7 +102,7 @@ function usePeriodicallyFetchData(flightId?: string) {
       setRefetchTimeout(
         setTimeout(() => {
           setToRefetch(true);
-        }, 120000)
+        }, 1000 * 60 * 10)
       );
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
