@@ -79,9 +79,7 @@ function usePeriodicallyFetchData(flightId?: string) {
 
     (async () => {
       try {
-        const res = await fetch(
-          `http://localhost:3001/api/flight-position?id=${flightId}`
-        );
+        const res = await fetch(`/api/flight-position?id=${flightId}`);
 
         const data = await res.json();
 
