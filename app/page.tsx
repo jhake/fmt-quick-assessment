@@ -8,7 +8,6 @@ export default function Home({
   searchParams?: { flightId?: string };
 }) {
   const flightId = searchParams?.flightId;
-  console.log("HOST", process.env["HOST"]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
