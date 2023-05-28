@@ -2,7 +2,7 @@ import { use } from "react";
 import Link from "next/link";
 
 async function getData() {
-  const res = await fetch(`http://localhost:3001/api/flight-search`);
+  const res = await fetch("/api/flight-search");
   const data = await res.json();
 
   return data;
