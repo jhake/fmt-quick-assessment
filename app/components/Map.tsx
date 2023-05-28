@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import { useEffect, useState } from "react";
 import {
   GoogleMap,
   useJsApiLoader,
@@ -12,68 +12,106 @@ const containerStyle = {
   height: "600px",
 };
 
-export function Map({ flightId }: { flightId: string }) {
+export function Map({ flightId }: { flightId?: string }) {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
   });
 
-  const [coordinates, setCoordinates] = React.useState([]);
-  const [toRefetch, setToRefetch] = React.useState(true);
+  const { data, loading, error } = usePeriodicallyFetchData(flightId);
 
-  React.useEffect(() => {
-    if (!toRefetch) return;
+  const waypoints =
+    data?.waypoints.reduce((acc: any, curr: any, i: number) => {
+      if (i % 2 === 0) {
+        acc.push({ lat: curr, lng: data.waypoints[i + 1] });
+      }
+      return acc;
+    }, []) ?? [];
 
-    (async () => {
-      const res = await fetch(
-        `http://localhost:3001/api/flight-position?id=${flightId}`,
-        {
-          next: { revalidate: 30 },
-        }
-      );
-      const data = await res.json();
-      console.log("data", data);
+  const lastPosition = {
+    lat: data?.last_position?.latitude ?? 0,
+    lng: data?.last_position?.longitude ?? 0,
+  };
 
-      // make [1,2,3,4,5,6] to [{lat: 1, lng: 2}, {lat: 3, lng: 4}, {lat: 5, lng: 6}}]
-      const coordinates = data.waypoints.reduce(
-        (acc: any, curr: any, i: number) => {
-          if (i % 2 === 0) {
-            acc.push({ lat: curr, lng: data.waypoints[i + 1] });
-          }
-          return acc;
-        },
-        []
-      );
+  if (!flightId) return <></>;
 
-      console.log("coordinates", coordinates);
-      setCoordinates(coordinates);
+  if (error)
+    return (
+      <div className="w-full h-[600px] flex items-center justify-center">
+        {error.message}
+      </div>
+    );
 
-      setTimeout(() => {
-        setToRefetch(true);
-      }, 10000);
-    })();
-  }, [toRefetch, flightId]);
+  if (loading)
+    return (
+      <div className="w-full h-[600px] flex items-center justify-center">
+        Loading...
+      </div>
+    );
 
-  const [map, setMap] = React.useState(null);
-
-  const onUnmount = React.useCallback(function callback(map) {
-    setMap(null);
-  }, []);
-
-  return isLoaded ? (
+  return isLoaded && !!data ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
       zoom={6}
-      center={coordinates[0]}
-      onUnmount={onUnmount}
+      center={lastPosition}
     >
-      {/* Child components, such as markers, info windows, etc. */}
       <>
-        <Marker position={coordinates[0]} />
-        <Polyline path={coordinates} />
+        <Marker position={lastPosition} />
+        <Polyline path={waypoints} />
       </>
     </GoogleMap>
   ) : (
     <></>
   );
+}
+
+function usePeriodicallyFetchData(flightId?: string) {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<{ message: string } | null>();
+  const [refetchTimeout, setRefetchTimeout] = useState<NodeJS.Timeout>();
+  const [toRefetch, setToRefetch] = useState(true);
+
+  useEffect(() => {
+    if (!toRefetch || !flightId) return;
+
+    clearTimeout(refetchTimeout);
+
+    (async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:3001/api/flight-position?id=${flightId}`
+        );
+
+        const data = await res.json();
+
+        if (!res?.ok) {
+          throw new Error(data?.title ?? "Failed to fetch");
+        }
+
+        setLoading(false);
+        setData(data);
+        setError(null);
+        setToRefetch(false);
+      } catch (error: any) {
+        if (!data) setError(error);
+        console.error(error);
+      }
+
+      setRefetchTimeout(
+        setTimeout(() => {
+          setToRefetch(true);
+        }, 120000)
+      );
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toRefetch, flightId]);
+
+  useEffect(() => {
+    if (!flightId) return;
+
+    setToRefetch(true);
+  }, [flightId]);
+
+  return { data, loading, error };
 }

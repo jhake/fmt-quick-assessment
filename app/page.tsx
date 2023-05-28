@@ -1,5 +1,6 @@
 import { use } from "react";
 import { Map } from "./components/Map";
+import { FlightSearch } from "./components/FlightSearch";
 
 // type Coordinate = {
 //   lat: number;
@@ -32,14 +33,17 @@ import { Map } from "./components/Map";
 //   return coordinates;
 // }
 
-export default function Home() {
+export default function Home({
+  searchParams,
+}: {
+  searchParams?: { flightId?: string };
+}) {
+  const flightId = searchParams?.flightId;
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Map flightId="N107BH-1685205991-adhoc-322p" />
-      <input
-        type="text"
-        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-      />
+      <Map flightId={flightId} />
+      <FlightSearch flightId={flightId} />
     </main>
   );
 }
