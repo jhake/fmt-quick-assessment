@@ -14,7 +14,7 @@ export function FlightSearch({ flightId }: { flightId?: string }) {
   const { flights } = use(getData());
 
   return (
-    <div className="flex flex-col items-center justify-between p-24 w-full">
+    <div className="flex flex-col items-center justify-between pt-12 w-full">
       <div className="text-2xl font-bold mb-2.5 text-left w-full">
         Enter the FA flight ID to track
       </div>

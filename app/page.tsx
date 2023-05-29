@@ -9,7 +9,7 @@ export default function Home({
   const flightId = searchParams?.flightId;
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex w-screen max-w-[1300px] flex-col items-center mx-auto media p-8">
       <Map flightId={flightId} />
       <FlightSearch flightId={flightId} />
     </main>

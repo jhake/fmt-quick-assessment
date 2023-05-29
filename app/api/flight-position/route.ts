@@ -33,4 +33,6 @@ export async function GET(request: Request) {
   //   .map((_, i) => i * 0.003 + Math.random() * 0.01);
 
   // const data = { waypoints: fakeWaypoints.reverse() };
+
+  // return NextResponse.json(data);
 }

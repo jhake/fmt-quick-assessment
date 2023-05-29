@@ -11,7 +11,7 @@ import getURL from "../utils/getURL";
 
 const containerStyle = {
   width: "100%",
-  height: "600px",
+  height: "100%",
 };
 
 export function Map({ flightId }: { flightId?: string }) {
@@ -52,16 +52,18 @@ export function Map({ flightId }: { flightId?: string }) {
     );
 
   return isLoaded && !!data ? (
-    <GoogleMap
-      mapContainerStyle={containerStyle}
-      zoom={6}
-      center={lastPosition}
-    >
-      <>
-        <Marker position={lastPosition} />
-        <Polyline path={waypoints} />
-      </>
-    </GoogleMap>
+    <div className="h-[600px] w-full top-8 sticky">
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        zoom={6}
+        center={lastPosition}
+      >
+        <>
+          <Marker position={lastPosition} />
+          <Polyline path={waypoints} />
+        </>
+      </GoogleMap>
+    </div>
   ) : (
     <></>
   );
